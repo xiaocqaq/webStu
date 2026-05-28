@@ -989,10 +989,6 @@
         font-size: 13px;
       }
 
-      .toc-sub {
-        display: none;
-      }
-
       .mindmap-panel {
         display: none;
       }
@@ -2610,7 +2606,7 @@
 
     function renderToc() {
       toc.innerHTML = knowledge.map(node => {
-        const children = (node.children || []).slice(0, 8);
+        const children = node.children || [];
         const sub = children.length
           ? `<ul class="toc-sub">${children.map(child => `<li><a href="#${child._id}">${escapeHtml(child.title)}</a></li>`).join("")}</ul>`
           : "";
