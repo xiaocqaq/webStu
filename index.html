@@ -458,7 +458,28 @@
       border-radius: 999px;
       background: var(--panel);
       color: var(--muted);
+      font: inherit;
       font-size: 13px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s, box-shadow .2s;
+    }
+
+    .chip:hover {
+      border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+      color: var(--brand);
+      background: color-mix(in srgb, var(--brand) 8%, var(--panel));
+    }
+
+    .chip:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
+
+    .chip.is-active {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: color-mix(in srgb, var(--brand) 14%, var(--panel));
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--brand) 16%, transparent);
     }
 
     .mindmap-panel {
@@ -808,6 +829,49 @@
       box-shadow: inset 4px 0 0 var(--brand);
     }
 
+    .back-to-top {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 14;
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border: 1px solid color-mix(in srgb, var(--brand) 38%, var(--line));
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--panel) 94%, transparent);
+      color: var(--brand);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(14px);
+      transition: opacity .22s ease, visibility .22s ease, transform .22s ease, background .2s ease, border-color .2s ease;
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-to-top:hover {
+      border-color: var(--brand);
+      background: color-mix(in srgb, var(--brand) 12%, var(--panel));
+    }
+
+    .back-to-top:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
+
+    .back-to-top.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
     @media (max-width: 920px) {
       .app-shell {
         grid-template-columns: 1fr;
@@ -894,6 +958,15 @@
         cursor: pointer;
         font-size: 22px;
         line-height: 1;
+      }
+
+      .back-to-top {
+        left: 14px;
+        right: auto;
+        bottom: 14px;
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
       }
 
       .mobile-menu-btn {
@@ -1120,6 +1193,7 @@
 <body>
   <div class="app-shell">
     <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+    <button class="back-to-top" id="backToTopBtn" type="button" aria-label="返回顶部" title="返回顶部">↑</button>
     <div class="drawer-backdrop" id="drawerBackdrop"></div>
     <aside class="sidebar" id="sidebar">
       <div class="drawer-head">
@@ -1163,20 +1237,20 @@
       <div class="topbar">
         <div>
           <h2>Pink老师前端知识库</h2>
-          <p class="hint">视频地址: <a class="video-link" href="https://www.bilibili.com/video/BV1MvaVzUEuz" target="_blank" rel="noopener noreferrer">2025版pink老师最新AI+前端入门教程</a></p>
+          <p class="hint"><a class="video-link" href="https://www.bilibili.com/video/BV1MvaVzUEuz" target="_blank" rel="noopener noreferrer">2025版pink老师最新AI+前端入门教程</a></p>
         </div>
       </div>
       <div class="reading-pin is-hidden" id="readingPin" aria-live="polite">
         <strong>当前位置</strong>
         <span id="readingPinText">可展开的前端学习地图</span>
       </div>
-      <div class="chips">
-        <span class="chip">HTML5 语义标签</span>
-        <span class="chip">CSS3 核心技术</span>
-        <span class="chip">Flex / Grid / 定位</span>
-        <span class="chip">Transform / Transition / Animation</span>
-        <span class="chip">SVG / clip-path / filter</span>
-        <span class="chip">移动端 / 响应式 / Bootstrap</span>
+      <div class="chips" id="topicChips">
+        <button type="button" class="chip" data-section="HTML5 语义标签">HTML5 语义标签</button>
+        <button type="button" class="chip" data-section="CSS3 核心技术">CSS3 核心技术</button>
+        <button type="button" class="chip" data-section="现代网页布局">Flex / Grid / 定位</button>
+        <button type="button" class="chip" data-section="交互动效设计">Transform / Transition / Animation</button>
+        <button type="button" class="chip" data-section="前沿技术拓展">SVG / clip-path / filter</button>
+        <button type="button" class="chip" data-section="移动网页开发">移动端 / 响应式 / Bootstrap</button>
       </div>
       <section class="mindmap-panel" aria-label="课程思维导图">
         <div class="mindmap-title">
@@ -2593,11 +2667,17 @@
     const expandBtn = document.querySelector("#expandBtn");
     const collapseBtn = document.querySelector("#collapseBtn");
     const clearBtn = document.querySelector("#clearBtn");
+    const topicChips = document.querySelector("#topicChips");
+    const backToTopBtn = document.querySelector("#backToTopBtn");
 
     const state = {
       total: 0,
       query: ""
     };
+
+    let lastScrollY = window.scrollY;
+    const backToTopThreshold = 280;
+    const backToTopScrollDelta = 8;
 
     function escapeHtml(value) {
       return String(value)
@@ -2783,6 +2863,27 @@
       window.requestAnimationFrame(updateReadingPin);
     }
 
+    function updateBackToTopVisibility() {
+      const currentY = window.scrollY;
+
+      if (currentY <= backToTopThreshold) {
+        backToTopBtn.classList.remove("is-visible");
+      } else if (currentY + backToTopScrollDelta < lastScrollY) {
+        backToTopBtn.classList.add("is-visible");
+      } else if (currentY > lastScrollY + backToTopScrollDelta) {
+        backToTopBtn.classList.remove("is-visible");
+      }
+
+      lastScrollY = currentY;
+    }
+
+    function scheduleScrollUiUpdate() {
+      window.requestAnimationFrame(() => {
+        updateReadingPin();
+        updateBackToTopVisibility();
+      });
+    }
+
     function getCurrentReadingNode() {
       const visibleNodes = [...tree.querySelectorAll("details.node:not(.is-hidden)")];
       let currentNode = null;
@@ -2830,6 +2931,20 @@
       } catch (error) {
         searchInput.focus();
       }
+    }
+
+    function setActiveChip(chip) {
+      topicChips.querySelectorAll(".chip").forEach(item => {
+        item.classList.toggle("is-active", item === chip);
+      });
+    }
+
+    function jumpToSection(title) {
+      const section = knowledge.find(node => node.title === title);
+      if (!section?._id) return;
+      closeDrawer();
+      history.replaceState(null, "", `#${section._id}`);
+      focusNodeById(section._id);
     }
 
     function setDrawerOpen(open) {
@@ -2949,6 +3064,23 @@
       focusSearchInputWithoutScroll();
     });
 
+    topicChips.addEventListener("click", event => {
+      const chip = event.target.closest(".chip");
+      if (!chip) return;
+      const title = chip.dataset.section;
+      if (!title) return;
+      jumpToSection(title);
+      setActiveChip(chip);
+    });
+
+    backToTopBtn.addEventListener("click", () => {
+      closeDrawer();
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      backToTopBtn.classList.remove("is-visible");
+      lastScrollY = 0;
+      scheduleReadingPinUpdate();
+    });
+
     searchResultList.addEventListener("click", event => {
       const link = event.target.closest("[data-target]");
       if (!link) return;
@@ -2973,8 +3105,8 @@
     window.addEventListener("keydown", event => {
       if (event.key === "Escape") closeDrawer();
     });
-    window.addEventListener("scroll", scheduleReadingPinUpdate, { passive: true });
-    window.addEventListener("resize", scheduleReadingPinUpdate);
+    window.addEventListener("scroll", scheduleScrollUiUpdate, { passive: true });
+    window.addEventListener("resize", scheduleScrollUiUpdate);
 
     const savedTheme = localStorage.getItem("pinkKnowledgeTheme");
     setTheme(savedTheme || "light");
