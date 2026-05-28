@@ -105,11 +105,17 @@
     }
 
     .search-row input {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       border: 0;
       outline: 0;
       color: var(--text);
       background: transparent;
+    }
+
+    .search-row span {
+      flex: 0 0 auto;
+      white-space: nowrap;
     }
 
     .toolbar {
@@ -531,9 +537,23 @@
     }
 
     .node-title {
+      position: relative;
       display: block;
+      padding-left: 12px;
+      color: var(--text);
       font-weight: 800;
       line-height: 1.35;
+    }
+
+    .node-title::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .2em;
+      bottom: .2em;
+      width: 4px;
+      border-radius: 999px;
+      background: var(--brand);
     }
 
     .node-path {
@@ -548,20 +568,28 @@
 
     .badge {
       flex: 0 0 auto;
-      padding: 3px 8px;
+      padding: 3px 9px;
       border-radius: 999px;
-      background: var(--panel-2);
-      color: var(--muted);
+      border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line));
+      background: color-mix(in srgb, var(--brand) 12%, var(--panel-2));
+      color: var(--brand);
       font-size: 12px;
+      font-weight: 800;
       white-space: nowrap;
     }
 
     .content {
-      padding: 0 16px 16px 50px;
+      margin: 0 16px 16px 50px;
+      padding: 12px 14px 14px;
+      border-left: 3px solid color-mix(in srgb, var(--brand-2) 58%, transparent);
+      border-radius: 0 8px 8px 0;
+      background: color-mix(in srgb, var(--panel-2) 58%, transparent);
+      color: var(--text);
     }
 
     .content p {
-      margin: 8px 0;
+      margin: 8px 0 10px;
+      color: var(--text);
     }
 
     .content ul {
@@ -570,16 +598,28 @@
     }
 
     .content li {
-      margin: 5px 0;
+      margin: 6px 0;
+      color: var(--muted);
+    }
+
+    .content li::marker {
+      color: var(--brand);
+    }
+
+    .content li strong,
+    .content p strong,
+    .source strong {
+      color: var(--brand);
     }
 
     code {
       padding: .12em .35em;
       border-radius: 5px;
       background: var(--code-bg);
-      color: var(--brand);
+      color: var(--brand-2);
       font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
       font-size: .95em;
+      font-weight: 700;
     }
 
     pre {
@@ -601,10 +641,6 @@
       margin-top: 10px;
       color: var(--muted);
       font-size: 13px;
-    }
-
-    .source strong {
-      color: var(--text);
     }
 
     mark {
@@ -678,7 +714,7 @@
           <input id="search" type="search" placeholder="例如 border-radius / flex / 表单">
         </label>
         <div class="toolbar">
-          <button class="btn primary" id="themeBtn" type="button">切换暗色</button>
+          <button class="btn" id="themeBtn" type="button">切换暗色</button>
           <button class="btn" id="clearBtn" type="button">清空搜索</button>
           <button class="btn" id="expandBtn" type="button">全部展开</button>
           <button class="btn" id="collapseBtn" type="button">全部收起</button>
