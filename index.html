@@ -301,6 +301,43 @@
       color: var(--muted);
     }
 
+    .reading-pin {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      margin: -8px 0 18px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--panel) 92%, transparent);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .reading-pin.is-hidden {
+      display: none;
+    }
+
+    .reading-pin strong {
+      color: var(--brand);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .reading-pin span {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -697,6 +734,11 @@
       .content {
         padding-left: 18px;
       }
+
+      .reading-pin {
+        top: 0;
+        margin-top: 0;
+      }
     }
   </style>
 </head>
@@ -741,6 +783,10 @@
           <h2>可展开的前端学习地图</h2>
           <p class="hint">建议从左侧搜索具体属性或标签。搜索会自动展开命中的知识路径，例如“CSS技术 - 盒子模型 - 边框 - 边框圆角 - border-radius”。</p>
         </div>
+      </div>
+      <div class="reading-pin is-hidden" id="readingPin" aria-live="polite">
+        <strong>当前位置</strong>
+        <span id="readingPinText">可展开的前端学习地图</span>
       </div>
       <div class="chips">
         <span class="chip">HTML5 语义标签</span>
@@ -2155,6 +2201,8 @@
     const nodeCountEl = document.querySelector("#nodeCount");
     const matchCountEl = document.querySelector("#matchCount");
     const emptyEl = document.querySelector("#empty");
+    const readingPin = document.querySelector("#readingPin");
+    const readingPinText = document.querySelector("#readingPinText");
     const themeBtn = document.querySelector("#themeBtn");
     const expandBtn = document.querySelector("#expandBtn");
     const collapseBtn = document.querySelector("#collapseBtn");
@@ -2334,6 +2382,72 @@
       window.setTimeout(() => node.classList.remove("search-focus"), 1600);
     }
 
+    function getPinnedPath(path) {
+      const parts = String(path || "").split(" - ").filter(Boolean);
+      return parts.slice(0, 2).join(" / ");
+    }
+
+    function updateReadingPin() {
+      const currentNode = getCurrentReadingNode();
+
+      const path = getPinnedPath(currentNode?.dataset.path);
+      readingPin.classList.toggle("is-hidden", !path);
+      readingPinText.textContent = path || "";
+    }
+
+    function scheduleReadingPinUpdate() {
+      window.requestAnimationFrame(updateReadingPin);
+    }
+
+    function getCurrentReadingNode() {
+      const visibleNodes = [...tree.querySelectorAll("details.node:not(.is-hidden)")];
+      let currentNode = null;
+
+      for (const node of visibleNodes) {
+        const rect = node.getBoundingClientRect();
+        if (rect.top <= 78 && rect.bottom > 78) {
+          currentNode = node;
+        }
+      }
+
+      return currentNode || visibleNodes.find(node => node.getBoundingClientRect().top > 78);
+    }
+
+    function openNodeAncestors(node) {
+      let current = node;
+      while (current) {
+        current.open = true;
+        current = current.parentElement?.closest("details.node");
+      }
+    }
+
+    function restoreReadingPosition(anchorPath, anchorOffset, fallbackScrollTop) {
+      const anchor = anchorPath
+        ? [...tree.querySelectorAll("details.node")].find(node => node.dataset.path === anchorPath)
+        : null;
+
+      if (anchor) {
+        openNodeAncestors(anchor);
+        window.scrollTo({
+          top: window.scrollY + anchor.getBoundingClientRect().top - anchorOffset,
+          left: 0,
+          behavior: "auto"
+        });
+      } else {
+        window.scrollTo({ top: fallbackScrollTop, left: 0, behavior: "auto" });
+      }
+
+      updateReadingPin();
+    }
+
+    function focusSearchInputWithoutScroll() {
+      try {
+        searchInput.focus({ preventScroll: true });
+      } catch (error) {
+        searchInput.focus();
+      }
+    }
+
     function renderSearchResults(matchedNodes, query) {
       if (!query) {
         searchResults.classList.add("is-hidden");
@@ -2359,43 +2473,24 @@
     function applySearch() {
       const query = searchInput.value.trim();
       state.query = searchInput.value.trim();
-      render();
       const nodes = [...tree.querySelectorAll("details.node")];
-      let matches = 0;
 
       if (!query) {
-        nodes.forEach(node => {
-          node.classList.remove("is-hidden");
-          if (Number(node.dataset.level) === 1) node.open = false;
-        });
         matchCountEl.textContent = state.total;
-        emptyEl.style.display = "none";
         renderSearchResults([], "");
         return;
       }
 
       const matchedNodes = [];
+      let matches = 0;
       nodes.forEach(node => {
         const matched = fuzzyMatch(node.dataset.selfText, query);
         const titleMatched = fuzzyMatch(node.dataset.titleText, query);
-        node.dataset.selfMatch = matched ? "1" : "0";
+        if (matched) matches += 1;
         if (titleMatched) matchedNodes.push(node);
       });
 
-      nodes.reverse().forEach(node => {
-        const childMatched = [...node.querySelectorAll(":scope > .content > details.node")]
-          .some(child => child.dataset.branchMatch === "1");
-        const branchMatched = node.dataset.selfMatch === "1" || childMatched;
-        node.dataset.branchMatch = branchMatched ? "1" : "0";
-        node.classList.toggle("is-hidden", !branchMatched);
-        if (branchMatched) {
-          node.open = true;
-          if (node.dataset.selfMatch === "1") matches += 1;
-        }
-      });
-
       matchCountEl.textContent = matches;
-      emptyEl.style.display = matches ? "none" : "block";
       renderSearchResults(matchedNodes, query);
     }
 
@@ -2412,18 +2507,20 @@
 
     expandBtn.addEventListener("click", () => {
       tree.querySelectorAll("details").forEach(detail => detail.open = true);
+      scheduleReadingPinUpdate();
     });
 
     collapseBtn.addEventListener("click", () => {
       tree.querySelectorAll("details").forEach(detail => detail.open = false);
+      scheduleReadingPinUpdate();
     });
 
     clearBtn.addEventListener("click", () => {
       searchInput.value = "";
       state.query = "";
-      render();
+      matchCountEl.textContent = state.total;
       renderSearchResults([], "");
-      searchInput.focus();
+      focusSearchInputWithoutScroll();
     });
 
     searchResultList.addEventListener("click", event => {
@@ -2435,10 +2532,13 @@
     });
 
     searchInput.addEventListener("input", applySearch);
+    window.addEventListener("scroll", scheduleReadingPinUpdate, { passive: true });
+    window.addEventListener("resize", scheduleReadingPinUpdate);
 
     const savedTheme = localStorage.getItem("pinkKnowledgeTheme");
     setTheme(savedTheme || "light");
     render();
+    updateReadingPin();
   </script>
 </body>
 </html>
