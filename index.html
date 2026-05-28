@@ -65,6 +65,10 @@
       min-height: 100vh;
     }
 
+    body.sidebar-collapsed .app-shell {
+      grid-template-columns: 48px minmax(0, 1fr);
+    }
+
     .sidebar {
       position: sticky;
       top: 0;
@@ -78,6 +82,49 @@
     .drawer-head,
     .drawer-backdrop,
     .mobile-menu-btn {
+      display: none;
+    }
+
+    .sidebar-toggle {
+      position: sticky;
+      top: 12px;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      margin: 0 0 12px auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    body.sidebar-collapsed .sidebar {
+      padding: 12px 7px;
+      overflow: hidden;
+    }
+
+    body.sidebar-collapsed .sidebar-toggle {
+      margin-right: auto;
+    }
+
+    body.sidebar-collapsed .sidebar-toggle::before {
+      content: ">";
+    }
+
+    body:not(.sidebar-collapsed) .sidebar-toggle::before {
+      content: "<";
+    }
+
+    body.sidebar-collapsed .brand,
+    body.sidebar-collapsed .search-box,
+    body.sidebar-collapsed .stats,
+    body.sidebar-collapsed .toc-title,
+    body.sidebar-collapsed .search-results,
+    body.sidebar-collapsed .toc {
       display: none;
     }
 
@@ -281,6 +328,12 @@
     .toc a:hover {
       background: var(--panel-2);
       color: var(--brand);
+    }
+
+    .toc a.is-active {
+      background: color-mix(in srgb, var(--brand) 14%, var(--panel));
+      color: var(--brand);
+      box-shadow: inset 3px 0 0 var(--brand);
     }
 
     .toc > li > a:hover {
@@ -716,6 +769,10 @@
         grid-template-columns: 1fr;
       }
 
+      body.sidebar-collapsed .app-shell {
+        grid-template-columns: 1fr;
+      }
+
       .sidebar {
         position: fixed;
         top: 0;
@@ -770,6 +827,10 @@
         padding: 13px 14px;
         border-bottom: 1px solid var(--line);
         background: var(--panel);
+      }
+
+      .sidebar-toggle {
+        display: none;
       }
 
       .drawer-head strong {
@@ -1021,6 +1082,7 @@
         <strong>搜索与目录</strong>
         <button class="drawer-close" id="drawerCloseBtn" type="button" aria-label="关闭目录">×</button>
       </div>
+      <button class="sidebar-toggle" id="sidebarToggleBtn" type="button" aria-label="折叠侧边栏" aria-expanded="true"></button>
       <div class="brand">
         <h1>Pink老师前端知识库</h1>
         <p>根据本地课程代码、PDF 笔记目录和示例文件整理，支持搜索、展开和亮暗主题。</p>
@@ -2482,6 +2544,7 @@
     const mobileMenuBtn = document.querySelector("#mobileMenuBtn");
     const drawerBackdrop = document.querySelector("#drawerBackdrop");
     const drawerCloseBtn = document.querySelector("#drawerCloseBtn");
+    const sidebarToggleBtn = document.querySelector("#sidebarToggleBtn");
     const themeBtn = document.querySelector("#themeBtn");
     const expandBtn = document.querySelector("#expandBtn");
     const collapseBtn = document.querySelector("#collapseBtn");
@@ -2669,6 +2732,7 @@
       const path = getPinnedPath(currentNode?.dataset.path);
       readingPin.classList.toggle("is-hidden", !path);
       readingPinText.textContent = path || "";
+      updateActiveToc(currentNode);
     }
 
     function scheduleReadingPinUpdate() {
@@ -2731,6 +2795,39 @@
 
     function closeDrawer() {
       setDrawerOpen(false);
+    }
+
+    function setSidebarCollapsed(collapsed) {
+      document.body.classList.toggle("sidebar-collapsed", collapsed);
+      sidebarToggleBtn.setAttribute("aria-expanded", String(!collapsed));
+      sidebarToggleBtn.setAttribute("aria-label", collapsed ? "展开侧边栏" : "折叠侧边栏");
+      window.requestAnimationFrame(updateReadingPin);
+    }
+
+    function findTocLinkForNode(node) {
+      let current = node;
+      while (current) {
+        const link = [...toc.querySelectorAll("a")].find(item => item.getAttribute("href") === `#${current.id}`);
+        if (link) return link;
+        current = current.parentElement?.closest("details.node");
+      }
+      return null;
+    }
+
+    function updateActiveToc(currentNode) {
+      toc.querySelectorAll("a.is-active").forEach(link => link.classList.remove("is-active"));
+      if (!currentNode || document.body.classList.contains("sidebar-collapsed")) return;
+
+      const activeLink = findTocLinkForNode(currentNode);
+      if (!activeLink) return;
+
+      activeLink.classList.add("is-active");
+      const sidebar = activeLink.closest(".sidebar");
+      if (!sidebar) return;
+
+      const linkTop = activeLink.offsetTop;
+      const centeredTop = linkTop - (sidebar.clientHeight / 2) + (activeLink.offsetHeight / 2);
+      sidebar.scrollTo({ top: Math.max(0, centeredTop), behavior: "smooth" });
     }
 
     function renderSearchResults(matchedNodes, query) {
@@ -2820,6 +2917,9 @@
     searchInput.addEventListener("input", applySearch);
     mobileMenuBtn.addEventListener("click", () => {
       setDrawerOpen(!document.body.classList.contains("drawer-open"));
+    });
+    sidebarToggleBtn.addEventListener("click", () => {
+      setSidebarCollapsed(!document.body.classList.contains("sidebar-collapsed"));
     });
     drawerBackdrop.addEventListener("click", closeDrawer);
     drawerCloseBtn.addEventListener("click", closeDrawer);
