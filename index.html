@@ -846,6 +846,7 @@
 
       main {
         padding: 18px 12px 74px;
+        overflow-x: hidden;
       }
 
       .topbar {
@@ -922,11 +923,13 @@
 
       .node-title {
         font-size: 17px;
+        overflow-wrap: anywhere;
       }
 
       .node-path {
         font-size: 13px;
         white-space: normal;
+        overflow-wrap: anywhere;
       }
 
       .badge {
@@ -941,11 +944,15 @@
         padding: 12px 12px 14px;
         font-size: 16px;
         line-height: 1.8;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
 
       .content p,
       .content li {
         font-size: 16px;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
 
       .reading-pin {
@@ -957,7 +964,20 @@
         margin-right: -2px;
         margin-left: -2px;
         padding: 12px;
+        overflow-x: hidden;
         font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      pre code {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+
+      .source {
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
     }
 
@@ -1023,6 +1043,7 @@
       }
 
       code {
+        overflow-wrap: anywhere;
         word-break: break-word;
       }
     }
