@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>web学习知识库</title>
+  <title>Pink老师前端课程知识库</title>
   <style>
     :root {
       color-scheme: light;
@@ -158,6 +158,55 @@
     }
 
     .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search-results {
+      margin: 14px 0 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-2);
+      overflow: hidden;
+    }
+
+    .search-results-title {
+      padding: 9px 11px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .search-result-list {
+      display: grid;
+      max-height: 320px;
+      overflow: auto;
+      padding: 6px;
+    }
+
+    .search-result {
+      display: grid;
+      gap: 2px;
+      padding: 8px 9px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      line-height: 1.45;
+    }
+
+    .search-result:hover,
+    .search-result:focus-visible {
+      outline: none;
+      background: var(--panel);
+      color: var(--brand);
+    }
+
+    .search-result strong {
+      font-size: 13px;
+    }
+
+    .search-result span {
       color: var(--muted);
       font-size: 12px;
     }
@@ -578,6 +627,11 @@
       display: none !important;
     }
 
+    details.search-focus > summary {
+      background: color-mix(in srgb, var(--brand) 14%, transparent);
+      box-shadow: inset 4px 0 0 var(--brand);
+    }
+
     @media (max-width: 920px) {
       .app-shell {
         grid-template-columns: 1fr;
@@ -636,6 +690,11 @@
       </div>
 
       <p class="toc-title">课程章节</p>
+      <div class="search-results is-hidden" id="searchResults" aria-live="polite">
+        <div class="search-results-title">搜索结果（点击跳转）</div>
+        <div class="search-result-list" id="searchResultList"></div>
+      </div>
+
       <ul class="toc" id="toc"></ul>
     </aside>
 
@@ -2054,6 +2113,8 @@
     const toc = document.querySelector("#toc");
     const courseMap = document.querySelector("#courseMap");
     const searchInput = document.querySelector("#search");
+    const searchResults = document.querySelector("#searchResults");
+    const searchResultList = document.querySelector("#searchResultList");
     const nodeCountEl = document.querySelector("#nodeCount");
     const matchCountEl = document.querySelector("#matchCount");
     const emptyEl = document.querySelector("#empty");
@@ -2078,6 +2139,35 @@
 
     function normalizeText(value) {
       return String(value || "").toLowerCase().trim();
+    }
+
+    function splitSearchTerms(value) {
+      return normalizeText(value)
+        .split(/\s+/)
+        .map(term => term.trim())
+        .filter(Boolean);
+    }
+
+    function orderedCharMatch(text, keyword) {
+      let cursor = 0;
+      for (const char of keyword) {
+        cursor = text.indexOf(char, cursor);
+        if (cursor === -1) return false;
+        cursor += char.length;
+      }
+      return true;
+    }
+
+    function fuzzyMatch(text, keyword) {
+      const normalizedText = normalizeText(text);
+      const normalizedKeyword = normalizeText(keyword);
+      if (!normalizedKeyword) return true;
+      if (normalizedText.includes(normalizedKeyword)) return true;
+
+      const terms = splitSearchTerms(normalizedKeyword);
+      if (terms.length > 1 && terms.every(term => fuzzyMatch(normalizedText, term))) return true;
+
+      return orderedCharMatch(normalizedText, normalizedKeyword);
     }
 
     function plainNodeText(node) {
@@ -2121,7 +2211,7 @@
       const badge = node.tag || (children.length ? `${children.length} 项` : "知识点");
       const content = renderContent(node);
       return `
-        <details class="node" id="${id}" data-level="${level}" data-text="${escapeHtml(text)}">
+        <details class="node" id="${id}" data-level="${level}" data-text="${escapeHtml(text)}" data-path="${escapeHtml(nextPath.join(" - "))}" data-title="${escapeHtml(node.title)}">
           <summary>
             <span class="summary-main">
               <span class="node-title">${highlight(node.title)}</span>
@@ -2184,8 +2274,44 @@
       courseMap.innerHTML = `<div class="map-tree">${renderMapNode(rootNode)}</div>`;
     }
 
+    function focusNodeById(id) {
+      const node = document.getElementById(id);
+      if (!node) return;
+      let parent = node.parentElement?.closest("details.node");
+      while (parent) {
+        parent.open = true;
+        parent = parent.parentElement?.closest("details.node");
+      }
+      node.open = true;
+      node.classList.add("search-focus");
+      node.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.setTimeout(() => node.classList.remove("search-focus"), 1600);
+    }
+
+    function renderSearchResults(matchedNodes, query) {
+      if (!query) {
+        searchResults.classList.add("is-hidden");
+        searchResultList.innerHTML = "";
+        return;
+      }
+
+      const topMatches = matchedNodes.slice(0, 60);
+      searchResults.classList.remove("is-hidden");
+      if (!topMatches.length) {
+        searchResultList.innerHTML = `<div class="search-result"><strong>没有可跳转结果</strong><span>换一个关键词试试</span></div>`;
+        return;
+      }
+
+      searchResultList.innerHTML = topMatches.map(node => `
+        <a class="search-result" href="#${node.id}" data-target="${node.id}">
+          <strong>${highlight(node.dataset.title || "")}</strong>
+          <span>${highlight(node.dataset.path || "")}</span>
+        </a>
+      `).join("");
+    }
+
     function applySearch() {
-      const query = normalizeText(searchInput.value);
+      const query = searchInput.value.trim();
       state.query = searchInput.value.trim();
       render();
       const nodes = [...tree.querySelectorAll("details.node")];
@@ -2198,12 +2324,15 @@
         });
         matchCountEl.textContent = state.total;
         emptyEl.style.display = "none";
+        renderSearchResults([], "");
         return;
       }
 
+      const matchedNodes = [];
       nodes.forEach(node => {
-        const matched = node.dataset.text.includes(query);
+        const matched = fuzzyMatch(node.dataset.text, query);
         node.dataset.selfMatch = matched ? "1" : "0";
+        if (matched) matchedNodes.push(node);
       });
 
       nodes.reverse().forEach(node => {
@@ -2220,6 +2349,7 @@
 
       matchCountEl.textContent = matches;
       emptyEl.style.display = matches ? "none" : "block";
+      renderSearchResults(matchedNodes, query);
     }
 
     function setTheme(theme) {
@@ -2245,7 +2375,16 @@
       searchInput.value = "";
       state.query = "";
       render();
+      renderSearchResults([], "");
       searchInput.focus();
+    });
+
+    searchResultList.addEventListener("click", event => {
+      const link = event.target.closest("[data-target]");
+      if (!link) return;
+      event.preventDefault();
+      history.replaceState(null, "", `#${link.dataset.target}`);
+      focusNodeById(link.dataset.target);
     });
 
     searchInput.addEventListener("input", applySearch);
