@@ -71,6 +71,12 @@
       border-right: 1px solid var(--line);
     }
 
+    .drawer-head,
+    .drawer-backdrop,
+    .mobile-menu-btn {
+      display: none;
+    }
+
     .brand {
       margin-bottom: 18px;
     }
@@ -712,39 +718,311 @@
       }
 
       .sidebar {
-        position: static;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 30;
+        width: min(86vw, 360px);
         height: auto;
-        border-right: 0;
+        max-height: none;
+        padding: 16px 14px 22px;
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+        box-shadow: 18px 0 40px rgba(0, 0, 0, .18);
+        transform: translateX(-105%);
+        transition: transform .22s ease;
+        overscroll-behavior: contain;
+      }
+
+      body.drawer-open {
+        overflow: hidden;
+      }
+
+      body.drawer-open .sidebar {
+        transform: translateX(0);
+      }
+
+      body.drawer-open .drawer-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: block;
+        background: rgba(15, 20, 28, .48);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .22s ease;
+      }
+
+      .drawer-head {
+        position: sticky;
+        top: -16px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: -16px -14px 14px;
+        padding: 13px 14px;
         border-bottom: 1px solid var(--line);
+        background: var(--panel);
+      }
+
+      .drawer-head strong {
+        color: var(--text);
+        font-size: 15px;
+      }
+
+      .drawer-close {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel-2);
+        color: var(--text);
+        cursor: pointer;
+        font-size: 22px;
+        line-height: 1;
+      }
+
+      .mobile-menu-btn {
+        position: fixed;
+        right: 14px;
+        bottom: 14px;
+        z-index: 15;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 72px;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid color-mix(in srgb, var(--brand) 50%, var(--line));
+        border-radius: 999px;
+        background: var(--brand);
+        color: white;
+        box-shadow: 0 12px 28px rgba(25, 34, 48, .22);
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .brand h1 {
+        font-size: 21px;
+      }
+
+      .brand p {
+        font-size: 13px;
+      }
+
+      .search-box {
+        margin: 14px 0;
+      }
+
+      .toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .btn {
+        min-height: 42px;
+      }
+
+      .stats {
+        margin: 14px 0 16px;
+      }
+
+      .search-result-list {
+        max-height: 220px;
       }
 
       main {
-        padding-top: 22px;
+        padding: 18px 12px 74px;
       }
 
       .topbar {
         align-items: flex-start;
         flex-direction: column;
+        margin-bottom: 14px;
+      }
+
+      .topbar h2 {
+        font-size: 24px;
+      }
+
+      .hint {
+        font-size: 14px;
+      }
+
+      .chips {
+        gap: 6px;
+        margin: 12px 0 18px;
+      }
+
+      .chip {
+        font-size: 12px;
+      }
+
+      .mindmap-panel {
+        margin: 16px -12px 20px;
+        padding: 16px 12px;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+      }
+
+      .mindmap-title {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-bottom: 14px;
+      }
+
+      .mindmap-title span {
+        white-space: normal;
+      }
+
+      .course-map {
+        min-width: 760px;
+      }
+
+      .map-root > .map-button {
+        min-height: 48px;
+        font-size: 18px;
+      }
+
+      .map-button {
+        max-width: 220px;
+        min-height: 32px;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+
+      .map-children {
+        gap: 12px;
+        margin-left: 42px;
       }
 
       details details {
         margin-left: 10px;
       }
 
+      summary {
+        align-items: flex-start;
+        min-height: 48px;
+        padding: 11px 12px;
+      }
+
+      .node-title {
+        font-size: 15px;
+      }
+
+      .node-path {
+        white-space: normal;
+      }
+
+      .badge {
+        max-width: 86px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .content {
-        padding-left: 18px;
+        margin: 0 10px 12px 28px;
+        padding: 10px 11px 12px;
+        font-size: 14px;
       }
 
       .reading-pin {
         top: 0;
         margin-top: 0;
       }
+
+      pre {
+        margin-right: -2px;
+        margin-left: -2px;
+        padding: 10px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .sidebar {
+        width: min(90vw, 340px);
+        padding: 16px 12px 22px;
+      }
+
+      .drawer-head {
+        margin-right: -12px;
+        margin-left: -12px;
+        padding-right: 12px;
+        padding-left: 12px;
+      }
+
+      .toolbar,
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .search-row {
+        min-height: 42px;
+        padding: 0 10px;
+      }
+
+      .search-row span {
+        font-size: 13px;
+      }
+
+      .toc-sub {
+        display: none;
+      }
+
+      .reading-pin {
+        margin-bottom: 12px;
+        padding: 7px 10px;
+      }
+
+      .reading-pin strong,
+      .reading-pin span {
+        font-size: 12px;
+      }
+
+      .mindmap-panel {
+        display: none;
+      }
+
+      details {
+        border-radius: 7px;
+      }
+
+      summary::before {
+        flex-basis: 22px;
+        width: 22px;
+        height: 22px;
+      }
+
+      .content {
+        margin-left: 14px;
+      }
+
+      code {
+        word-break: break-word;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="sidebar" aria-expanded="false">目录</button>
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="drawer-head">
+        <strong>搜索与目录</strong>
+        <button class="drawer-close" id="drawerCloseBtn" type="button" aria-label="关闭目录">×</button>
+      </div>
       <div class="brand">
         <h1>Pink老师前端知识库</h1>
         <p>根据本地课程代码、PDF 笔记目录和示例文件整理，支持搜索、展开和亮暗主题。</p>
@@ -2203,6 +2481,9 @@
     const emptyEl = document.querySelector("#empty");
     const readingPin = document.querySelector("#readingPin");
     const readingPinText = document.querySelector("#readingPinText");
+    const mobileMenuBtn = document.querySelector("#mobileMenuBtn");
+    const drawerBackdrop = document.querySelector("#drawerBackdrop");
+    const drawerCloseBtn = document.querySelector("#drawerCloseBtn");
     const themeBtn = document.querySelector("#themeBtn");
     const expandBtn = document.querySelector("#expandBtn");
     const collapseBtn = document.querySelector("#collapseBtn");
@@ -2448,6 +2729,15 @@
       }
     }
 
+    function setDrawerOpen(open) {
+      document.body.classList.toggle("drawer-open", open);
+      mobileMenuBtn.setAttribute("aria-expanded", String(open));
+    }
+
+    function closeDrawer() {
+      setDrawerOpen(false);
+    }
+
     function renderSearchResults(matchedNodes, query) {
       if (!query) {
         searchResults.classList.add("is-hidden");
@@ -2529,9 +2819,21 @@
       event.preventDefault();
       history.replaceState(null, "", `#${link.dataset.target}`);
       focusNodeById(link.dataset.target);
+      closeDrawer();
     });
 
     searchInput.addEventListener("input", applySearch);
+    mobileMenuBtn.addEventListener("click", () => {
+      setDrawerOpen(!document.body.classList.contains("drawer-open"));
+    });
+    drawerBackdrop.addEventListener("click", closeDrawer);
+    drawerCloseBtn.addEventListener("click", closeDrawer);
+    toc.addEventListener("click", event => {
+      if (event.target.closest("a")) closeDrawer();
+    });
+    window.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeDrawer();
+    });
     window.addEventListener("scroll", scheduleReadingPinUpdate, { passive: true });
     window.addEventListener("resize", scheduleReadingPinUpdate);
 
