@@ -654,8 +654,7 @@
     }
 
     .content li strong,
-    .content p strong,
-    .source strong {
+    .content p strong {
       color: var(--brand);
     }
 
@@ -682,12 +681,6 @@
       padding: 0;
       background: transparent;
       color: var(--text);
-    }
-
-    .source {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
     }
 
     mark {
@@ -912,6 +905,7 @@
       }
 
       details details {
+        margin-top: 6px;
         margin-left: 0;
       }
 
@@ -940,8 +934,10 @@
       }
 
       .content {
-        margin: 0 8px 12px;
-        padding: 12px 12px 14px;
+        margin: 0 4px 10px;
+        padding: 10px 8px 12px;
+        border-left: 0;
+        border-radius: 8px;
         font-size: 16px;
         line-height: 1.8;
         overflow-wrap: anywhere;
@@ -975,10 +971,6 @@
         word-break: break-word;
       }
 
-      .source {
-        overflow-wrap: anywhere;
-        word-break: break-word;
-      }
     }
 
     @media (max-width: 520px) {
@@ -1037,9 +1029,9 @@
       }
 
       .content {
-        margin-right: 4px;
-        margin-left: 4px;
-        padding: 12px;
+        margin-right: 0;
+        margin-left: 0;
+        padding: 10px 8px;
       }
 
       code {
@@ -2602,9 +2594,6 @@
       }
       if (node.code) {
         parts.push(`<pre><code>${highlight(node.code)}</code></pre>`);
-      }
-      if (node.source) {
-        parts.push(`<p class="source"><strong>来源：</strong>${highlight(node.source)}</p>`);
       }
       return parts.join("");
     }
