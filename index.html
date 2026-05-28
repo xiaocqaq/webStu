@@ -540,7 +540,7 @@
     }
 
     details details {
-      margin: 10px 0 0 18px;
+      margin: 6px 0 0;
       box-shadow: none;
       background: color-mix(in srgb, var(--panel) 92%, var(--panel-2));
     }
@@ -626,12 +626,13 @@
     }
 
     .content {
-      margin: 0 16px 16px 50px;
-      padding: 12px 14px 14px;
-      border-left: 3px solid color-mix(in srgb, var(--brand-2) 58%, transparent);
-      border-radius: 0 8px 8px 0;
+      margin: 0 4px 10px;
+      padding: 10px 8px 12px;
+      border-radius: 8px;
       background: color-mix(in srgb, var(--panel-2) 58%, transparent);
       color: var(--text);
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .content p {
@@ -904,11 +905,6 @@
         margin-left: 42px;
       }
 
-      details details {
-        margin-top: 6px;
-        margin-left: 0;
-      }
-
       summary {
         align-items: flex-start;
         min-height: 48px;
@@ -934,14 +930,8 @@
       }
 
       .content {
-        margin: 0 4px 10px;
-        padding: 10px 8px 12px;
-        border-left: 0;
-        border-radius: 8px;
         font-size: 16px;
         line-height: 1.8;
-        overflow-wrap: anywhere;
-        word-break: break-word;
       }
 
       .content p,
@@ -1015,12 +1005,6 @@
         flex-basis: 22px;
         width: 22px;
         height: 22px;
-      }
-
-      .content {
-        margin-right: 0;
-        margin-left: 0;
-        padding: 10px 8px;
       }
 
       code {
