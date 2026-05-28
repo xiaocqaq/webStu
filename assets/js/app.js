@@ -190,10 +190,25 @@ function focusNodeById(id) {
     parent.open = true;
     parent = parent.parentElement?.closest("details.node");
   }
-  node.open = true;
-  node.classList.add("search-focus");
+  if (node.matches("details.node")) {
+    node.open = true;
+    node.classList.add("search-focus");
+  }
   node.scrollIntoView({ behavior: "smooth", block: "start" });
   window.setTimeout(() => node.classList.remove("search-focus"), 1600);
+}
+
+function jumpToAnchorLink(link) {
+  const href = link?.getAttribute("href") || "";
+  if (!href.startsWith("#") || href.length <= 1) return false;
+
+  const targetId = decodeURIComponent(href.slice(1));
+  if (!document.getElementById(targetId)) return false;
+
+  history.replaceState(null, "", `#${targetId}`);
+  focusNodeById(targetId);
+  closeDrawer();
+  return true;
 }
 
 function getPinnedPath(path) {
@@ -451,7 +466,14 @@ sidebarToggleBtn.addEventListener("click", () => {
 drawerBackdrop.addEventListener("click", closeDrawer);
 drawerCloseBtn.addEventListener("click", closeDrawer);
 toc.addEventListener("click", event => {
-  if (event.target.closest("a")) closeDrawer();
+  const link = event.target.closest("a");
+  if (!link) return;
+  if (jumpToAnchorLink(link)) event.preventDefault();
+});
+courseMap.addEventListener("click", event => {
+  const link = event.target.closest("a");
+  if (!link) return;
+  if (jumpToAnchorLink(link)) event.preventDefault();
 });
 window.addEventListener("keydown", event => {
   if (event.key === "Escape") closeDrawer();
