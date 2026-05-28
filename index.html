@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='10' y='8' width='36' height='48' rx='5' fill='%23d83f87'/%3E%3Cpath d='M18 14h28c4 0 8 4 8 8v34H20c-5 0-8-3-8-8V20c0-3 3-6 6-6Z' fill='%23ffffff' stroke='%2318202b' stroke-width='3'/%3E%3Cpath d='M20 20h24M20 28h24M20 36h18' stroke='%231e88e5' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M14 48c1 3 3 5 7 5h30' fill='none' stroke='%2318202b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
   <title>Pink老师前端课程知识库</title>
   <style>
     :root {
@@ -2178,6 +2179,13 @@
       return parts.filter(Boolean).join(" ");
     }
 
+    function plainSelfText(node) {
+      const parts = [node.title, node.summary, node.source, node.tag];
+      if (node.points) parts.push(...node.points);
+      if (node.code) parts.push(node.code);
+      return parts.filter(Boolean).join(" ");
+    }
+
     function highlight(value) {
       const raw = String(value || "");
       const query = state.query.trim();
@@ -2208,10 +2216,12 @@
       const nextPath = [...path, node.title];
       const children = node.children || [];
       const text = normalizeText(plainNodeText(node));
+      const selfText = normalizeText(plainSelfText(node));
+      const titleText = normalizeText(node.title);
       const badge = node.tag || (children.length ? `${children.length} 项` : "知识点");
       const content = renderContent(node);
       return `
-        <details class="node" id="${id}" data-level="${level}" data-text="${escapeHtml(text)}" data-path="${escapeHtml(nextPath.join(" - "))}" data-title="${escapeHtml(node.title)}">
+        <details class="node" id="${id}" data-level="${level}" data-text="${escapeHtml(text)}" data-self-text="${escapeHtml(selfText)}" data-title-text="${escapeHtml(titleText)}" data-path="${escapeHtml(nextPath.join(" - "))}" data-title="${escapeHtml(node.title)}">
           <summary>
             <span class="summary-main">
               <span class="node-title">${highlight(node.title)}</span>
@@ -2330,9 +2340,10 @@
 
       const matchedNodes = [];
       nodes.forEach(node => {
-        const matched = fuzzyMatch(node.dataset.text, query);
+        const matched = fuzzyMatch(node.dataset.selfText, query);
+        const titleMatched = fuzzyMatch(node.dataset.titleText, query);
         node.dataset.selfMatch = matched ? "1" : "0";
-        if (matched) matchedNodes.push(node);
+        if (titleMatched) matchedNodes.push(node);
       });
 
       nodes.reverse().forEach(node => {
