@@ -360,8 +360,52 @@
 
     .hint {
       max-width: 840px;
-      margin: 0 0 20px;
+      margin: 10px 0 20px;
       color: var(--muted);
+    }
+
+    .hint .video-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 6px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--brand) 32%, var(--line));
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--brand) 12%, var(--panel)),
+        color-mix(in srgb, var(--brand-2) 8%, var(--panel))
+      );
+      color: var(--brand);
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--brand) 10%, transparent);
+      transition: background .2s, border-color .2s, box-shadow .2s, transform .15s, color .2s;
+    }
+
+    .hint .video-link::after {
+      content: "↗";
+      font-size: 12px;
+      line-height: 1;
+      opacity: .8;
+    }
+
+    .hint .video-link:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+      background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--brand) 20%, var(--panel)),
+        color-mix(in srgb, var(--brand-2) 14%, var(--panel))
+      );
+      box-shadow: 0 6px 18px color-mix(in srgb, var(--brand) 22%, transparent);
+      transform: translateY(-1px);
+    }
+
+    .hint .video-link:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
     }
 
     .reading-pin {
@@ -1118,8 +1162,8 @@
     <main>
       <div class="topbar">
         <div>
-          <h2>可展开的前端学习地图</h2>
-          <p class="hint">建议从左侧搜索具体属性或标签。搜索会自动展开命中的知识路径，例如“CSS技术 - 盒子模型 - 边框 - 边框圆角 - border-radius”。</p>
+          <h2>Pink老师前端知识库</h2>
+          <p class="hint">视频地址: <a class="video-link" href="https://www.bilibili.com/video/BV1MvaVzUEuz" target="_blank" rel="noopener noreferrer">2025版pink老师最新AI+前端入门教程</a></p>
         </div>
       </div>
       <div class="reading-pin is-hidden" id="readingPin" aria-live="polite">
