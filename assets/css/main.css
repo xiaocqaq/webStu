@@ -179,23 +179,42 @@ body.sidebar-collapsed .toc {
   align-items: center;
   gap: 8px;
   padding: 0 12px;
-  min-height: 44px;
+  min-height: 46px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel-2);
 }
 
 .search-row input {
+  appearance: none;
+  -webkit-appearance: none;
   flex: 1;
   min-width: 0;
+  height: 32px;
+  padding: 0;
   border: 0;
   outline: 0;
   color: var(--text);
   background: transparent;
+  font-size: 14px;
+  line-height: 32px;
+}
+
+.search-row input::placeholder {
+  color: color-mix(in srgb, var(--muted) 76%, var(--brand-2));
+  font-weight: 500;
+  opacity: .82;
 }
 
 .search-row span {
+  display: inline-flex;
+  align-items: center;
   flex: 0 0 auto;
+  height: 32px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
   white-space: nowrap;
 }
 
