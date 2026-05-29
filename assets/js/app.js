@@ -26,10 +26,31 @@ const state = {
   query: ""
 };
 
+const searchPlaceholderKeywords = [
+  "border-radius",
+  "flex",
+  "Grid",
+  "盒子模型",
+  "锚点链接",
+  "表单",
+  "语义标签",
+  "定位",
+  "transition",
+  "animation",
+  "SVG",
+  "clip-path",
+  "filter",
+  "vw",
+  "rem",
+  "Bootstrap",
+  "响应式"
+];
+
 let lastScrollY = window.scrollY;
 const backToTopThreshold = 280;
 const backToTopScrollDelta = 8;
 let summaryPress = null;
+let lastPlaceholderKeyword = "";
 
 function escapeHtml(value) {
   return String(value)
@@ -330,6 +351,23 @@ function setSidebarCollapsed(collapsed) {
   window.requestAnimationFrame(updateReadingPin);
 }
 
+function getRandomSearchKeyword() {
+  if (searchPlaceholderKeywords.length === 1) return searchPlaceholderKeywords[0];
+
+  let keyword = lastPlaceholderKeyword;
+  while (keyword === lastPlaceholderKeyword) {
+    const index = Math.floor(Math.random() * searchPlaceholderKeywords.length);
+    keyword = searchPlaceholderKeywords[index];
+  }
+  lastPlaceholderKeyword = keyword;
+  return keyword;
+}
+
+function updateSearchPlaceholder() {
+  if (searchInput.value) return;
+  searchInput.placeholder = `试试搜索 ${getRandomSearchKeyword()}`;
+}
+
 function selectionIntersectsElement(element) {
   const selection = window.getSelection?.();
   if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false;
@@ -519,4 +557,6 @@ window.addEventListener("resize", scheduleScrollUiUpdate);
 const savedTheme = localStorage.getItem("pinkKnowledgeTheme");
 setTheme(savedTheme || "light");
 render();
+updateSearchPlaceholder();
+window.setInterval(updateSearchPlaceholder, 10000);
 updateReadingPin();
