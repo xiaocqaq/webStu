@@ -697,7 +697,7 @@ summary {
   border-bottom: 1px solid transparent;
   background: var(--node-heading-bg);
   cursor: pointer;
-  user-select: none;
+  user-select: text;
   list-style: none;
 }
 
@@ -731,6 +731,7 @@ summary::before {
   color: var(--node-heading);
   font-weight: 800;
   line-height: 1;
+  user-select: none;
 }
 
 details[data-level="3"] > summary::before {
@@ -799,6 +800,7 @@ details[data-level="3"] > summary .node-path {
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
+  user-select: none;
 }
 
 details[data-level="3"] > summary .badge {

@@ -29,6 +29,7 @@ const state = {
 let lastScrollY = window.scrollY;
 const backToTopThreshold = 280;
 const backToTopScrollDelta = 8;
+let summaryPress = null;
 
 function escapeHtml(value) {
   return String(value)
@@ -329,6 +330,29 @@ function setSidebarCollapsed(collapsed) {
   window.requestAnimationFrame(updateReadingPin);
 }
 
+function selectionIntersectsElement(element) {
+  const selection = window.getSelection?.();
+  if (!selection || selection.isCollapsed || selection.rangeCount === 0) return false;
+  if (!selection.toString().trim()) return false;
+
+  for (let index = 0; index < selection.rangeCount; index += 1) {
+    const range = selection.getRangeAt(index);
+    if (element.contains(range.commonAncestorContainer)) return true;
+    if (range.intersectsNode && range.intersectsNode(element)) return true;
+  }
+
+  return false;
+}
+
+function shouldKeepSummaryState(summary, event) {
+  const isLongPress = summaryPress?.summary === summary
+    && Date.now() - summaryPress.startedAt > 450;
+  const hasSelectedTitleText = selectionIntersectsElement(summary);
+
+  summaryPress = null;
+  return isLongPress || hasSelectedTitleText || event.detail === 0 && hasSelectedTitleText;
+}
+
 function findTocLinkForNode(node) {
   let current = node;
   while (current) {
@@ -457,6 +481,17 @@ searchResultList.addEventListener("click", event => {
 });
 
 searchInput.addEventListener("input", applySearch);
+tree.addEventListener("pointerdown", event => {
+  const summary = event.target.closest("summary");
+  summaryPress = summary && tree.contains(summary)
+    ? { summary, startedAt: Date.now() }
+    : null;
+});
+tree.addEventListener("click", event => {
+  const summary = event.target.closest("summary");
+  if (!summary || !tree.contains(summary)) return;
+  if (shouldKeepSummaryState(summary, event)) event.preventDefault();
+});
 mobileMenuBtn.addEventListener("click", () => {
   setDrawerOpen(!document.body.classList.contains("drawer-open"));
 });
