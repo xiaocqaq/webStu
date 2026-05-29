@@ -21,6 +21,7 @@ const knowledge = [
       {
         title: "标签关系",
         summary: "HTML 标签之间主要有父子、兄弟、祖先、后代关系，CSS 选择器和 DOM 操作都依赖这些关系。",
+        easy: "把 HTML 想成家谱：外层标签是父母，里面直接包着的是孩子；同一层的几个标签是兄弟。CSS 选择器很多时候就是按这张家谱找人。",
         points: [
           "父子关系：一个标签直接包裹另一个标签，例如 <ul> 与内部 <li>。",
           "兄弟关系：拥有同一个父级的多个元素，例如多个 <li>。",
@@ -76,6 +77,7 @@ const knowledge = [
           },
           {
             title: "div 与 span",
+            easy: "div 像一个大收纳箱，适合装一整块内容；span 像给一句话里的几个字贴标签，适合做局部样式。",
             points: [
               "<div> 是块级通用容器，本身没有语义，常用于布局分组。",
               "<span> 是行内容器，适合包裹一小段文字做局部样式。",
@@ -102,6 +104,7 @@ const knowledge = [
         children: [
           {
             title: "块级元素",
+            easy: "块级元素像一排货架，默认自己占一整行，后面的内容通常要到下一行开始。",
             points: [
               "常见块级元素：div、p、h1-h6、ul、ol、li、table、form、header、section。",
               "默认独占一行，可以设置 width、height、margin、padding。",
@@ -111,6 +114,7 @@ const knowledge = [
           },
           {
             title: "行内元素",
+            easy: "行内元素像一句话里的词，默认跟其他文字挤在同一行，大小主要由内容撑开。",
             points: [
               "常见行内元素：span、a、strong、em、label。",
               "默认一行显示多个，宽高一般由内容撑开。",
@@ -145,6 +149,7 @@ const knowledge = [
           },
           {
             title: "相对路径",
+            easy: "相对路径像从当前教室找房间：./ 是本教室，../ 是上一层楼，img/logo.png 是当前楼层里的 img 房间。",
             points: [
               "./ 表示当前目录，可省略但写出来更清楚。",
               "../ 表示上一级目录。",
@@ -246,6 +251,7 @@ const knowledge = [
           },
           {
             title: "input 常用 type",
+            easy: "type 决定输入框扮演什么角色：text 像普通填空题，password 像遮住答案的填空题，radio 像单选题，checkbox 像多选题。",
             points: [
               "text：单行文本框。",
               "password：密码框，输入内容会被遮挡。",
@@ -397,6 +403,7 @@ const knowledge = [
         children: [
           {
             title: "层叠性",
+            easy: "把 CSS 想成多人给同一个盒子提意见：都说颜色时，浏览器要按权重和先后顺序决定听谁的。权重一样，就听后写的。",
             points: [
               "同一个元素、同一个属性被多条规则设置时，会根据权重、来源和书写顺序决定最终样式。",
               "权重相同，后写的覆盖先写的。",
@@ -406,6 +413,7 @@ const knowledge = [
           },
           {
             title: "继承性",
+            easy: "像家里的统一着装要求：父元素设置了字体和颜色，子元素通常会跟着用；但宽高、边框、外边距这类盒子尺寸不会自动传下去。",
             points: [
               "文本相关属性常能继承，例如 color、font、line-height、text-align。",
               "盒模型属性通常不继承，例如 width、height、margin、padding、border。",
@@ -415,6 +423,7 @@ const knowledge = [
           },
           {
             title: "优先级与权重",
+            easy: "可以把选择器当成指令级别：id 像点名，class 像按小组叫人，标签像按身份叫人。点名通常比按小组更具体，所以更容易生效。",
             points: [
               "!important 权重最高，但会破坏可维护性，慎用。",
               "行内样式 > id 选择器 > 类/伪类/属性选择器 > 标签/伪元素选择器 > 通配符。",
@@ -469,6 +478,7 @@ const knowledge = [
         children: [
           {
             title: "盒子组成",
+            easy: "盒子模型像快递盒：content 是商品，padding 是防震泡沫，border 是纸箱外壳，margin 是这个快递盒和其他快递盒之间的距离。",
             points: [
               "content：内容区域，由 width/height 控制。",
               "padding：内边距，内容与边框之间的距离。",
@@ -522,6 +532,7 @@ const knowledge = [
           },
           {
             title: "外边距 margin",
+            easy: "margin 像人与人之间保持的距离；两个上下相邻的人都说要留距离时，浏览器常常只取较大的那个距离，而不是简单相加。",
             points: [
               "margin 控制盒子外部距离。",
               "块级盒子水平居中常用 width + margin: 0 auto。",
@@ -533,6 +544,7 @@ const knowledge = [
           },
           {
             title: "盒子尺寸 box-sizing",
+            easy: "content-box 像只量商品本身，泡沫和纸箱另算；border-box 像直接规定快递盒最终尺寸，里面的泡沫和纸箱都算在这个尺寸里。",
             points: [
               "content-box 是默认标准盒模型，width/height 只包含内容区域。",
               "border-box 表示 width/height 包含 content、padding、border。",
@@ -654,6 +666,7 @@ const knowledge = [
         children: [
           {
             title: "浮动特点",
+            easy: "float 最初像报纸排版：图片靠左浮起来，文字从旁边绕过去。后来被拿来做布局，所以经常需要清除浮动来让父盒子重新包住内容。",
             points: [
               "float:left/right 让元素脱离普通文档流，并向左或向右排列。",
               "浮动最早常用于文字环绕图片，后来大量用于 PC 端布局。",
@@ -690,6 +703,7 @@ const knowledge = [
           },
           {
             title: "主轴方向 flex-direction",
+            easy: "Flex 先决定队伍往哪里排。row 是横着排队，column 是竖着排队；队伍方向变了，所谓“主轴对齐”的方向也会跟着变。",
             points: [
               "row：默认，从左到右。",
               "row-reverse：从右到左。",
@@ -702,6 +716,7 @@ const knowledge = [
           },
           {
             title: "主轴对齐 justify-content",
+            easy: "把它想成一排座位怎么分配：center 是大家坐中间，space-between 是第一个坐最左、最后一个坐最右，中间的人均匀分开。",
             points: [
               "flex-start：主轴起点对齐。",
               "flex-end：主轴终点对齐。",
@@ -755,6 +770,7 @@ const knowledge = [
         children: [
           {
             title: "相对定位 relative",
+            easy: "relative 像人从座位上挪了一点拍照，但原来的座位还被他占着，别人不会补上来。",
             points: [
               "相对定位仍占据原来的位置。",
               "top/right/bottom/left 是相对自身原位置偏移。",
@@ -765,6 +781,7 @@ const knowledge = [
           },
           {
             title: "绝对定位 absolute",
+            easy: "absolute 像把便利贴贴到最近的定位父盒子上，它不再占原来的排版位置，其他内容会当它不存在。",
             points: [
               "绝对定位脱离文档流，不占原位置。",
               "相对于最近的有定位祖先元素定位；没有则相对于初始包含块。",
@@ -797,6 +814,7 @@ const knowledge = [
           },
           {
             title: "z-index 叠放次序",
+            easy: "z-index 像桌面上叠纸片的层级，数字大的一般盖在上面；但如果纸片被装进不同文件夹，先比较文件夹层级，再比较里面的纸片。",
             points: [
               "z-index 只对定位元素或特定布局上下文中的元素生效。",
               "数值越大越靠上。",
@@ -812,6 +830,7 @@ const knowledge = [
         children: [
           {
             title: "容器与轨道",
+            easy: "Grid 像先画一张表格，再把内容放进格子里。columns 是列，rows 是行，gap 是格子之间的缝。",
             points: [
               "display:grid 创建网格容器。",
               "grid-template-columns 定义列轨道。",
@@ -824,6 +843,7 @@ const knowledge = [
           },
           {
             title: "fr 单位",
+            easy: "fr 像分蛋糕：固定宽度先切走，剩下的空间再按 1fr、2fr 这些份数分。",
             points: [
               "fr 表示可用空间的一份。",
               "1fr 1fr 1fr 表示三列均分。",
@@ -835,6 +855,7 @@ const knowledge = [
           },
           {
             title: "repeat 与自动填充",
+            easy: "repeat 像复制同一种列宽规则；auto-fill 像货架自动摆商品，空间够就多摆一列，不够就少摆一列。",
             points: [
               "repeat(4, 1fr) 表示重复 4 次 1fr。",
               "auto-fill 会尽可能填充更多列。",
@@ -957,6 +978,7 @@ const knowledge = [
       },
       {
         title: "transition 过渡",
+        easy: "transition 像给状态变化加缓冲：按钮从普通状态变成 hover 状态时，不是瞬间跳过去，而是在指定时间里慢慢变过去。",
         points: [
           "transition 让属性变化在一段时间内平滑完成。",
           "常用组成：transition-property、transition-duration、transition-timing-function、transition-delay。",
@@ -982,6 +1004,7 @@ const knowledge = [
           },
           {
             title: "透视 perspective",
+            easy: "perspective 像你离舞台的距离：距离越近，前后大小差异越夸张；距离越远，3D 变化看起来越平缓。",
             points: [
               "perspective 设置观察者与 Z=0 平面的距离。",
               "值越小透视越强，变形越夸张。",
@@ -1002,6 +1025,7 @@ const knowledge = [
           },
           {
             title: "背面隐藏 backface-visibility",
+            easy: "把卡片想成扑克牌：翻到背面时，如果不隐藏背面，正反两面的内容可能同时透出来；hidden 就像只让朝向你的那一面可见。",
             points: [
               "元素翻转到背面时，默认背面可能可见。",
               "backface-visibility: hidden 可隐藏背面。",
@@ -1028,6 +1052,7 @@ const knowledge = [
           },
           {
             title: "animation 完整写法",
+            easy: "animation 像一段提前写好的剧本：元素不需要用户 hover，也能按关键帧、时长、次数、方向自己播放。",
             points: [
               "animation-name：动画名称。",
               "animation-duration：持续时间。",
@@ -1136,6 +1161,7 @@ const knowledge = [
       },
       {
         title: "背景滤镜 backdrop-filter",
+        easy: "filter 是给自己加滤镜，backdrop-filter 是给身后的画面加滤镜。玻璃效果看的不是玻璃本身模糊，而是玻璃后面的内容被模糊了。",
         points: [
           "backdrop-filter 作用于元素背后的内容，而不是元素自身。",
           "常见玻璃拟态写法：半透明背景 + backdrop-filter: blur(10px)。",
@@ -1147,6 +1173,7 @@ const knowledge = [
       },
       {
         title: "CSS 变量 var()",
+        easy: "CSS 变量像给颜色和间距起外号：先说 --brand 是粉色，后面所有按钮都用 var(--brand)。以后换主题，只改这个外号对应的值。",
         points: [
           "CSS 自定义属性以 -- 开头，例如 --main-color。",
           "使用 var(--main-color) 读取变量。",
@@ -1159,6 +1186,7 @@ const knowledge = [
       },
       {
         title: "calc() 计算函数",
+        easy: "calc 像 CSS 里的计算器：比如页面宽度是 100%，侧边栏固定 240px，正文就可以写成 calc(100% - 240px)。",
         points: [
           "calc() 可混合不同单位做计算。",
           "运算符 + - * / 两侧建议保留空格，尤其是 + 和 -。",
@@ -1210,6 +1238,7 @@ const knowledge = [
       },
       {
         title: "vw / vmin 适配",
+        easy: "vw 像用屏幕宽度当尺子：屏幕越宽，1vw 就越大。375px 设计稿里 100px，大约就是 26.6667vw。",
         points: [
           "1vw 等于视口宽度的 1%。",
           "设计稿宽度为 375px 时，1px 可换算为 100/375 vw。",
@@ -1221,6 +1250,7 @@ const knowledge = [
       },
       {
         title: "rem 适配",
+        easy: "rem 像全站共用一把尺子：html 的 font-size 是尺子刻度，所有 rem 尺寸都会跟着这把尺子一起放大或缩小。",
         points: [
           "rem 是相对于 html 根元素 font-size 的单位。",
           "通过 JS 或媒体查询动态修改 html 字号，可以让页面整体等比缩放。",
@@ -1250,6 +1280,7 @@ const knowledge = [
     children: [
       {
         title: "媒体查询 @media",
+        easy: "媒体查询像给不同屏幕准备不同衣服：手机穿一列布局，平板穿两列布局，电脑穿更宽的布局。",
         points: [
           "@media 媒体类型 and (媒体特性) { 样式 }。",
           "screen 表示屏幕设备，是网页最常见的媒体类型。",
@@ -1262,6 +1293,7 @@ const knowledge = [
       },
       {
         title: "响应式断点思路",
+        easy: "断点不是固定背几个数字，而是看内容什么时候放不下。就像搬家时箱子装不下了才换大箱子，不是每次都固定换同一个箱子。",
         points: [
           "常见断点不是死规则，要根据内容和设计决定。",
           "移动优先：先写小屏样式，再用 min-width 增强大屏。",
@@ -1283,6 +1315,7 @@ const knowledge = [
       },
       {
         title: "Bootstrap 栅格系统",
+        easy: "Bootstrap 栅格像把一行切成 12 份：col-6 占半行，col-4 占三分之一，col-md-4 表示到 md 尺寸及以上才按三分之一排。",
         points: [
           "一行使用 .row。",
           "列使用 .col、.col-6、.col-md-4 等 class。",

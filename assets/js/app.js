@@ -95,7 +95,7 @@ function fuzzyMatch(text, keyword) {
 }
 
 function plainNodeText(node) {
-  const parts = [node.title, node.summary, node.source, node.tag];
+  const parts = [node.title, node.summary, node.source, node.tag, node.easy];
   if (node.points) parts.push(...node.points);
   if (node.code) parts.push(node.code);
   if (node.children) parts.push(...node.children.map(plainNodeText));
@@ -103,7 +103,7 @@ function plainNodeText(node) {
 }
 
 function plainSelfText(node) {
-  const parts = [node.title, node.summary, node.source, node.tag];
+  const parts = [node.title, node.summary, node.source, node.tag, node.easy];
   if (node.points) parts.push(...node.points);
   if (node.code) parts.push(node.code);
   return parts.filter(Boolean).join(" ");
@@ -120,6 +120,9 @@ function highlight(value) {
 function renderContent(node) {
   const parts = [];
   if (node.summary) parts.push(`<p>${highlight(node.summary)}</p>`);
+  if (node.easy) {
+    parts.push(`<p class="easy-note"><strong>通俗理解：</strong>${highlight(node.easy)}</p>`);
+  }
   if (node.points) {
     parts.push(`<ul>${node.points.map(point => `<li>${highlight(point)}</li>`).join("")}</ul>`);
   }
